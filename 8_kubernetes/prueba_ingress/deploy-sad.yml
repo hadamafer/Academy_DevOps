@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-sad
+  namespace: happy-sad
+spec:
+  selector:
+    matchLabels:
+      app: nginx-sad
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: nginx-sad
+    spec:
+      containers:
+        - name: nginx-echo
+          image: hashicorp/http-echo
+          args:
+            - "-text=sad :-("
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sad-service
+  namespace: happy-sad
+spec:
+  selector:
+    app: nginx-sad
+  ports:
+    - port: 5678 # Default port for image

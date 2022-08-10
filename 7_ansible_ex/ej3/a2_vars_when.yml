@@ -1,0 +1,9 @@
+---
+- hosts: localhost 
+  vars: 
+    test1: "un texto largo y aburrido" 
+  tasks: 
+    - name: Testing Ansible conditional 
+      debug: 
+        msg: "Equals" 
+      when: test1 == "un texto largo y aburrido" 

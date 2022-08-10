@@ -1,0 +1,14 @@
+- name: Debug playbook
+  hosts: localhost
+  #  
+  vars_files:
+    - "a1_vars_2_var.yml"
+
+  tasks:
+    - name: "create files"
+      shell: "echo file test > /tmp/test_b1.txt"
+      when: "binary.bit_1 == 0"
+
+    - name: "alter file"
+      shell: "echo part two >> /tmp/test_b2.txt"
+      when: "binary.bit_2 == 0"

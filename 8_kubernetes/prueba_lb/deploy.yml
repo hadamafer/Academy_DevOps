@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-happy
+  namespace: prueba
+spec:
+  selector:
+    matchLabels:
+      app: nginx-happy
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginx-happy
+    spec:
+      containers:
+        - name: nginx-echo
+          image: hashicorp/http-echo
+          args:
+            - "-text=happy :-D"
+        - name: nginx-echo
+          image: hashicorp/http-echo
+          args:
+            - "-text=sad :-("
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp
+  namespace: prueba
+spec:
+  type: LoadBalancer 
+  selector:
+    app: nginx-happy
+  ports:
+  - port: 5678
+    # protocol: TCP
+    # targetPort: 8080
+
+# el lb es entre pods 
+#si quiero tener dos pods tendria que crer un service a cada uno y luego desde el backend conf el lb 
+

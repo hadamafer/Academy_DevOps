@@ -1,0 +1,45 @@
+# definimos el deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kubernetes.io/change-cause: "estoy con el contenedor nuevo contenedor"
+  name: puchito-deploy
+  labels:
+    app: puchito-deploy-label
+# definimos replicaSet
+spec:
+  revisionHistoryLimit: 8
+  replicas: 3
+  selector:
+    matchLabels:
+      app: puchito-deploy-label    # adopta todos los que tengan este label
+# definimos pod
+  template:
+    metadata:
+      labels:
+        app: puchito-deploy-label
+    spec:
+      containers:
+      - name: python1
+        image: python:3.10.4-alpine3.15
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        command: [ 'sh', '-c', 'echo "estoy con el contenedor python1" > index.html && python -m http.server 8082' ]
+      - name: contenedor1
+        image: nginx:stable-alpine
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        # hostNetwork: true
+        # dnsPolicy: Default
+      - name: python5
+        image: python:3.6-alpine
+        command: [ 'sh', '-c', 'echo "estoy con el contenedor python3" > index.html && python -m http.server 8083' ]
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"

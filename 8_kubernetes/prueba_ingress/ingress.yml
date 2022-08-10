@@ -1,0 +1,26 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  namespace: happy-sad
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+        - path: /saad
+          pathType: Prefix
+          backend:
+            service:
+              name: sad-service
+              port:
+                number: 5678
+        - path: /happy
+          pathType: Prefix
+          backend:
+            service:
+              name: happy-service
+              port:
+                number: 5678

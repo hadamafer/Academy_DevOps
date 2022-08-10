@@ -1,0 +1,54 @@
+- name: demo site
+  hosts: ac_ans_inv #dev
+  vars_files:
+    - "secret.yml"
+    - "vars.yml"
+  become: true
+
+  tasks:  
+    
+    - name: "enable epel"
+      shell: "amazon-linux-extras install epel -y"
+      tags:
+        - Install_epel
+
+    - name: "Install tools to httpds"
+      yum:
+        state: latest
+        name:
+          - httpd
+          - mod_ssl
+          - openssl
+      when: ansible_facts["pkg_mgr"] == "yum"
+      tags:
+      - Install_http
+
+    - name: "start apache2"
+      ansible.builtin.systemd:
+        state: started
+        name: httpd
+      tags:
+      - start
+
+    - name: "Make files"
+      shell: "echo {{SECRET}} > /var/www/html/hola.html && echo {{PRUEBA_2}} > /var/www/html/chao.html"
+      tags:
+        - export_var
+
+    - lineinfile: 
+        dest: "/var/www/html/chao.html"
+        line: "este es el item {{item}}"
+      with_items: "{{SSSS.KEY2}}"
+
+    - blockinfile: 
+        dest: "/var/www/html/chao.html"
+        block: "este es el nombre{{item.name}} y este el grupo {{item.group}}"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
+      with_items: "{{GROUP}}"
+    
+    - name: template work
+      template:
+        #src: "{{playbook_dir}}/template/index.html"
+        src: "{{playbook_dir}}/template/web.j2"
+        dest: "/var/www/html/web.html"
+      

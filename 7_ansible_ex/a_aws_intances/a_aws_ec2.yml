@@ -1,0 +1,56 @@
+- name: aws EC2 playbook
+  hosts: localhost
+  #connection: local
+  vars_files:
+    - "a_aws_ec2_secret.yml"
+    - "a_aws_ec2_vars.yml"
+
+  tasks:
+    - name: Provisioning EC2 instances
+      block:
+
+      - name: Upload public key to AWS
+        ec2_key:
+          name: "{{ key_name }}"
+          key_material: "{{ lookup('file', '/Users/.... # https://cloud-images.ubuntu.com/locator/ec2/}}"
+
+      - name: Create security group
+        ec2_group:
+          name: "{{ sec_group }}"
+          description: "Sec group for app {{ id }}"
+          vpc_id: vpc-0be6b7eaeaa9c8c72
+          vpc_subnet_id: subnet-0cd24d202b4d3c485
+          region: "{{ region }}"
+          aws_access_key: "{{aws_access_key}}"
+          aws_secret_key: "{{aws_secret_key}}"
+          rules:
+            - proto: tcp
+              ports:
+                - 22
+              cidr_ip: 0.0.0.0/0
+              rule_desc: allow all on ssh port
+        register: result_sec_group
+
+      - name: Provision instance(s)
+        ec2_instance:
+          aws_access_key: "{{aws_access_key}}"
+          aws_secret_key: "{{aws_secret_key}}"
+          region: "{{ aws_region }}"
+          key_name: "{{ key_name }}"
+          id: "{{ id }}"
+          group_id: "{{ result_sec_group.group_id }}"
+          image: "{{ image }}"
+          instance_type: t2.micro
+          tags:
+            env = "ac-xl-nov",
+            "cost:env" = "academy",
+            "cost:project" = "ac-xl-nov"
+          wait: true
+          count: 1
+          # exact_count: 2
+          # count_tag:
+          #   Name: App
+          # instance_tags:
+          #   Name: App
+
+      tags: ['never', 'create_ec2']

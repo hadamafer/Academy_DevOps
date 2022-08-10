@@ -1,0 +1,19 @@
+- name: wordpress
+  hosts: ac_ans_inv
+  become: true
+  vars:
+    wordpress_version: 5.9.3
+  tasks:
+    - name: Download WordPress
+      get_url:
+        url: https://wordpress.org/wordpress-latest.tar.gz
+        dest: "/tmp/wordpress-{{ wordpress_version }}.tar.gz"
+        validate_certs: false
+    - name: WordPress Extract archive
+      unarchive:
+        src: "/tmp/wordpress-{{ wordpress_version }}.tar.gz"
+        dest: /tmp/
+        copy: no
+    - name: Move WordPress install files
+      command: mv /tmp/wordpress /usr/share/nginx/html
+      become: yes

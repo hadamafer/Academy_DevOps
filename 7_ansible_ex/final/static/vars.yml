@@ -1,0 +1,44 @@
+MSM:
+  - "hola esto es msm1"
+  - "hola esto es msm2"
+  - "hola esto es msm3"
+
+GROUP:
+  - name: "fer"
+    group: "capa"
+  - name: "fer"
+    group: "diosa"
+
+SSSS:
+  KEY1: "ffffffff"
+  KEY2:
+  - "fer1"
+  - "fer2"
+
+
+GROUP2: #este no aparece en  ninguna pag XD
+  - name1: "fer"
+    group: "academy-xl"
+  - name2: "diego"
+    group: "academy-xl-xl"
+  - name3: "seba"
+    group: "academy-xl-xl"
+  - name1: "justino"
+    group: "academy-xl"
+  - name2: "mauri"
+    group: "academy-xl-xl"
+  - name3: "tomi"
+    group: "academy-xl-xl"
+  - name2: "dami"
+    group: "academy-xl-xl"
+  - name3: "jona"
+    group: "academy-xl-xl"
+
+
+TITLE: "HOLA ESTE ES EL TITULO"
+BODY: "ACA ES EL CUERPO"
+FOOTER: "ESTE ES EL PIE"
+SALUDO: "NOS VEMOS "
+
+SECRET: "esto es secret y tendria que estar en hola"
+PRUEBA_2: "esto es prueba 2 y tendria que estar en chao"

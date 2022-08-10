@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-sad
+spec:
+  selector:
+    matchLabels:
+      app: nginx-sad
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: nginx-sad
+    spec:
+      containers:
+        - name: nginx-echo
+          image: hashicorp/http-echo
+          args:
+            - "-text=sad :-("
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sad-service
+spec:
+  selector:
+    app: nginx-sad
+  ports:
+    - port: 5678 # Default port for image
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+        - path: /sad #minikube ip /sad
+          pathType: Prefix
+          backend:
+            service:
+              name: sad-service
+              port:
+                number: 5678

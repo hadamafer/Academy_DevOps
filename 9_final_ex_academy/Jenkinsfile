@@ -1,0 +1,64 @@
+pipeline{
+    agent any
+    tools {
+        go 'go1.12.6'
+    }
+    environment {
+        GO114MODULE = 'on'
+        CGO_ENABLED = 0 
+        GOPATH = "${JENKINS_HOME}/jobs/${JOB_NAME}/builds/${BUILD_ID}"
+    }
+    stages{
+        stage('git') {
+            steps{
+                git branch:'prod', credentialsId: 'api_go', url: 'git@github.com:DiegoDutka/final_ac_-grupo2.git'
+            }
+        }
+        stage('build local'){
+            steps{
+                //sh 'sudo yum install build-essential'
+                sh 'go version'
+                sh 'go get -u golang.org/x/lint/golint'
+                //sh 'go build'
+                
+            }
+        }
+        stage('Test') {
+            steps {
+                withEnv(["PATH+GO=${GOPATH}/bin"]){
+                    echo 'Running vetting'
+                    sh 'go vet .'
+                    echo 'Running linting'
+                    sh 'golint .'
+                    echo 'Running test'
+                    sh 'go test -v'
+                }
+            }
+        }
+        stage('build'){
+            
+            steps{
+                sh 'docker build -t diegodutka/go_api_ac_dd .'
+            }
+        }
+        stage('publish in docker hub'){
+            environment{
+                registryCredential='dockerhub_diego'
+            }
+            steps{
+                script{
+                    docker.withRegistry('',registryCredential){
+                        sh 'docker push diegodutka/go_api_ac_dd:latest'
+                    }
+                }
+            }
+        }
+        stage('deply with k8s'){
+            steps{
+                withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'awsjenkins', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]){
+                    sh 'kubectl apply -f config.yml'
+                }
+            }
+        }
+    }
+}

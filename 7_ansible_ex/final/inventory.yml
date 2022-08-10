@@ -1,0 +1,3 @@
+[nodo]
+ac_ans_inv ansible_host=44.202.197.9 ansible_connection=ssh ansible_user=ec2-user ansible_ssh_private_key_file=~/Downloads/ac_xl_pract_ssh.pem
+

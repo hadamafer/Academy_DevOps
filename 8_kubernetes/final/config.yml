@@ -1,0 +1,121 @@
+# --- Deployment Backend  ---------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app-depl-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demo-app-depl-backend
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: demo-app-depl-backend
+        tier: backend
+    spec:
+      containers:
+      - name: demo-app-depl-backend
+        image: fernandalopezr99/python-prueba #photoprism/demo
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        # ports:
+        # - containerPort: 2342 #5000
+---
+# --- service to Backend  ---------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app-backend
+  labels:
+    app: svr-backend-depl
+spec:
+  selector:
+    app: demo-app-depl-backend
+    tier: backend
+  # type: NodePort
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000 #5000
+  #   nodePort: 31500
+---
+# -- configmap to frontend  ---------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  labels:
+    app: nginx-frontin
+data:
+  nginxconf: |
+    upstream Backend {
+      server demo-app-backend;
+    }
+    server {
+      listen 80;
+      server_name demo-app-backend;
+      location / {
+        proxy_pass http://Backend;
+      }
+    }
+---
+# --- Deployment Frontend  ---------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app-depl-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-app-depl-frontend
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: demo-app-depl-frontend
+        tier: frontend
+    spec:
+      containers:
+      - name: demo-app-depl-frontend
+        image: nginx:alpine
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - mountPath: /etc/nginx/conf.d/
+            name: nginxconfg
+      volumes:
+        - name: nginxconfg
+          configMap:
+            name: nginx-conf
+            items:
+              - key: nginxconf
+                path: default.conf
+---
+# --- service to frontend  ---------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app-frontend
+  labels:
+    app: srv-front-depl
+spec:
+  selector:
+    app: demo-app-depl-frontend
+    tier: frontend
+  type: NodePort
+  ports:
+  - protocol: TCP
+    nodePort: 30500
+    port: 80
+    targetPort: 80
+
+#minikube service demo-app-frontend --url

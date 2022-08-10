@@ -1,0 +1,16 @@
+- name: Debug playbook
+  hosts: localhost
+  # variables en el playbook
+  vars_files:
+    - "a1_vars_2_var.yml"
+
+  tasks:
+    - name: "create files loops"
+      shell: "echo file test > /tmp/{{item}}.txt"
+      with_items: "{{array}}"
+      when: CALCULATE_ARRAY == true
+
+    - name: "create files loops"
+      shell: "echo item.val_1 / item.val_2 > /tmp/{{item.val_3}}.txt"
+      with_items: "{{array_2}}"
+      when: item.val_2 > 0

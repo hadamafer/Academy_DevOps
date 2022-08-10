@@ -1,0 +1,53 @@
+- name: demo site
+  hosts: ac_ans_inv #dev
+  vars_files:
+    - "secret.yml"
+    - "vars.yml"
+  become: true
+  tasks:
+    - name: "enable epel" #instala el yum 
+      shell: "amazon-linux-extras install epel -y"
+      tags:
+        - Install_epel
+
+    - name: "Install tools to httpds"
+      yum:
+        state: latest
+        name:
+          - nginx
+          #- httpd
+          - mod_ssl
+          - openssl
+      when: ansible_facts["pkg_mgr"] == "yum"
+      tags:
+      - Install_http
+
+    - name: "start nginx"
+      ansible.builtin.systemd:
+        state: started
+        name: nginx
+      tags:
+      - start
+
+    - name: "Make files"
+      shell: "echo {{SECRET}} > /usr/share/nginx/html/hola.html && echo {{PRUEBA_2}} > /usr/share/nginx/html/chao.html"
+      tags:
+        - export_var
+
+    - lineinfile: 
+        dest: "/usr/share/nginx/html/chao.html"
+        line: "este es el item {{item}}"
+      with_items: "{{SSSS.KEY2}}"
+
+    - blockinfile: 
+        dest: "/usr/share/nginx/html/chao.html"
+        block: "este es el nombre{{item.name}} y este el grupo {{item.group}}"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
+      with_items: "{{GROUP}}"
+    
+    - name: template work
+      template:
+        src: "{{playbook_dir}}/template/web.html"
+        #src: "{{playbook_dir}}/template/web.j2"
+        dest: "/usr/share/nginx/html/web.html"
+      

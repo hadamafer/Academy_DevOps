@@ -1,0 +1,56 @@
+- name: aws EC2 playbook
+  hosts: localhost
+  vars_files:
+    - "a_aws_ec2_secret.yml"
+    - "a_aws_ec2_vars.yml"
+
+  tasks:
+    - name: Provisioning EC2 instances Exist vpn and subnet
+      block:
+
+      - name: security_group
+        ec2_group:
+          name: ans_sg_fer1
+          description: DMZ Security Group
+          vpc_id: "vpc-0be6b7eaeaa9c8c72" 
+          region: "{{ aws_region }}"
+          aws_access_key: "{{ aws_access_key }}"
+          aws_secret_key: "{{ aws_secret_key }}"
+          rules:
+            - proto: tcp
+              ports:
+              - 80
+              cidr_ip: 0.0.0.0/0
+            - proto: tcp
+              ports:
+              - 22
+              cidr_ip: 0.0.0.0/0
+            # ver si tengo que agragr lo de ssh, creeria q no porque con la segunda regla basta 
+        register: security_group
+
+      - name: ec2
+        ec2:
+          image: ami-467ca739 #"{{ image }}"
+          instance_type: t2.micro
+          vpc_subnet_id: subnet-0cd24d202b4d3c485
+          group_id: "{{ security_group.group_id }}" #sg-03409068d272d7960 
+          region: "{{ aws_region }}"
+          key_name: "{{ key_name }}"
+          # SG access SSH
+          count_tag:
+            Name: ans_ec2_fer1
+          tags:
+            env = "ac-xl-nov",
+            "cost:env" = "academy",
+            "cost:project" = "ac-xl-nov"
+          wait: true
+          count: 1
+          aws_access_key: "{{aws_access_key}}"
+          aws_secret_key: "{{aws_secret_key}}"
+          # exact_count: 2
+          # count_tag:
+          #   Name: App
+          # instance_tags:
+          #   Name: App
+
+      #tags: ['never', 'create_ec2']

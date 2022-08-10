@@ -1,0 +1,14 @@
+ssh -i ./Downloads/ac_xl_pract_ssh.pem ec2-user@44.204.102.111
+ssh -i key.pem ec2-user@10.10.4.8
+
+sudo nano /etc/httpd/conf.d/default-site.conf
+<VirtualHost *:80> 
+    ProxyPreserveHost On 
+    ProxyPass / http://internal-tf-lb-20220509183644633600000002-1084090024.us-east-1.elb.amazonaws.com
+    ProxyPassReverse / http://internal-tf-lb-20220509183644633600000002-1084090024.us-east-1.elb.amazonaws.com
+</VirtualHost>
+
+sudo systemctl restart httpd
+sudo systemctl status httpd.service
+
+curl http://internal-tf-lb-20220510121200571700000002-890486155.us-east-1.elb.amazonaws.com

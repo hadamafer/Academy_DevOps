@@ -1,0 +1,61 @@
+- name: loops
+  hosts: localhost
+  connection: local
+
+  vars:
+    TEST:
+      - num: 1
+        character: "a"
+        word: "almost"
+      - num: 13
+        character: b
+        word: "build"
+      - num: 20
+        character: c
+        word: "currency"
+    LINE: >
+      I'm talking in position {{item.num}},
+      with the character {{item.character}},
+      about this topic {{item.word}}"
+  tasks:
+    - file: 
+        name: "/tmp/test.txt"
+        state: touch
+    - file: 
+        name: "/tmp/test2.txt"
+        state: touch
+    - file: 
+        name: "/tmp/test3.txt"
+        state: touch
+    - lineinfile:
+        dest: "/tmp/test.txt"
+        line: "value {{item}}"
+      with_items:
+        - "value 1"
+        - "value 2"
+        - "value 3"
+        - "value 4"
+      tags:
+        - run-test-1
+
+
+    - lineinfile:
+        dest: "/tmp/test2.txt"
+        line: "value {{item.value}} of object {{item.nameObject}}"
+      with_items:
+        - value: "value 1"
+          nameObject: "test 1"
+        - value: "value 2"
+          nameObject: "test 2"
+        - value: "value 3"
+          nameObject: "test 3"
+
+    - lineinfile:
+        dest: "/tmp/test3.txt"
+        line: "{{LINE}}"
+      with_items: "{{ TEST }}"
+
+#    - lineinfile:
+#        dest: "/tmp/test3.txt"
+#        line: "I'm talking in position {{item.num}}, with the character {{item.character}}, about this topic {{item.word}}"
+#      with_items: "{{ TEST }}"

@@ -1,0 +1,26 @@
+- name: install nginx 
+  hosts: all
+  become: yes 
+  tasks:
+    - name: "enable epel" #instala el yum 
+      shell: "amazon-linux-extras install epel -y"
+      tags:
+        - Install_epel
+    - name: "Install tools to httpds"
+      yum:
+        state: latest
+        name:
+          - nginx
+          #- httpd
+          - mod_ssl
+          - openssl
+      when: ansible_facts["pkg_mgr"] == "yum"
+      tags:
+      - Install_http
+
+    - name: "start nginx"
+      ansible.builtin.systemd:
+        state: started
+        name: nginx
+      tags:
+      - start

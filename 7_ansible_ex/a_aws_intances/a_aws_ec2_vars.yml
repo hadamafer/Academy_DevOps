@@ -1,0 +1,9 @@
+key_name: ac_xl_pract_ssh
+aws_region: "us-east-1"
+###
+#us-east-1 Amazon Linux 2 AMI (HVM) - Kernel 4.14, SSD Volume Type
+#ami-04ad2567c9e3d7893 (64-bit x86) 
+#ami-0d1a4d53e40abecc4 (64-bit Arm)
+image: "ami-467ca739" #ami-04ad2567c9e3d7893
+id: "ac-xl-nov"
+sec_group: "sg_ans_ fer2" #"{{ id }}-sec"

@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prueba
+  annotations:
+    kubernetes.io/change-cause: "Controlador de cambios"
+  namespace: prueba
+  labels:
+    app: "pruebadeployclase"
+spec:
+  revisionHistoryLimit: 8
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pruebaclase
+  template:
+    metadata:
+      labels:
+        app: pruebaclase
+    spec:
+      containers:
+      - name: myapp
+        image: photoprism/demo
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        # ports:
+        # - containerPort: 8080
+      hostNetwork: true #si coloco a nivel de pod hostNerwork=true voy a permitir la salida a internet de ambos contenedores 
+      dnsPolicy: Default 
+
+#minikube addons enable ingress
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: serviceprueba
+  namespace: prueba
+spec:
+  #type: NodePort
+  ports:
+    - port: 2342
+  # - name: http
+  #   targetPort: 2342 #puerto en el contenedor 
+  #   port: 2342
+  #   nodePort: 30066 #minikube ip -> esa que tira:nodeport
+  selector:
+    app: pruebaclase
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: myingress
+  namespace: prueba
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+  labels:
+    name: myingress
+spec:
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: serviceprueba
+            port: 
+              number: 2342
+

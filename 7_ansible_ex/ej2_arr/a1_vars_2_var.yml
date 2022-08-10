@@ -1,0 +1,24 @@
+SEC_1: "hight"
+SEC_2: "#fkjgf45dd#g:Rrtc%H(_)"
+array:
+  - "data_1"
+  - "data_2"
+  - "data_3"
+array_2:
+  - val_1: 4534
+    val_2: 45
+    val_3: "data_10"
+  - val_1: 164432
+    val_2: -7654
+    val_3: "data_20"
+  - val_1: 85
+    val_2: -6987632
+    val_3: "data_30"
+values:
+  val_1: 12
+  val_2: 6532
+binary:
+  bit_1: 0
+  bit_2: 1
+  bit_3: 0
+  bit_4: 0

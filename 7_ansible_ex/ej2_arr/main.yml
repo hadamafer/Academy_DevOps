@@ -1,0 +1,12 @@
+- name: Debug playbook
+  hosts: localhost
+  # variables en el platbook
+  vars_files:
+    - "a1_vars_2_var.yml"
+  tasks:
+    - debug:
+        var: SEC_1
+    - debug:
+        var: SEC_2
+    - debug:
+        var: binary
