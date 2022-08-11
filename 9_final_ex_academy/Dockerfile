@@ -3,6 +3,7 @@ FROM golang:1.18.2 as builder
 
 WORKDIR /src
 COPY *.go ./ 
+COPY nros.txt .
 COPY go.mod .
 RUN go mod download && go mod verify
 RUN ls -l

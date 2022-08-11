@@ -5,7 +5,7 @@ metadata:
   name: api-go-depl
   namespace: prod
 spec:
-  replicas: 2
+  replicas: 2 #levanta dos pods
   selector:
     matchLabels:
       app: api-go-depl
@@ -17,7 +17,7 @@ spec:
         tier: backend
     spec:
       containers:
-      - name: api-go-depl
+      - name: api-go-depl #descarga la imagen de dockerhub
         image: diegodutka/go_api_ac_dd
 ---
 apiVersion: v1
@@ -35,5 +35,5 @@ spec:
     - port: 9090
       targetPort: 9090
       nodePort: 30301
-  type: LoadBalancer
+  type: LoadBalancer #crea un servicio de lb para que podasmos acceder al pod asi podemos ver el deploy
 

@@ -85,11 +85,11 @@ func operator(operador string, num1 float64, num2 float64) (float64 , bool){
 }
 
 func operation(w http.ResponseWriter, r *http.Request){
-	query := r.URL.Query()
+	query := r.URL.Query() // http://localhost:8080/op?num=7&num2=3&op=suma
 	num := query.Get("num")
 	num2:= query.Get("num2")
 	oper:=query.Get("op")	
-	var st string
+	var st string 
 	var rep []byte
 	var err error //no entendi muy bien como tratarlo -> VER
 	var flag bool
